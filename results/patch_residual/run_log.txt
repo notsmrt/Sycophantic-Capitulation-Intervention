@@ -1,0 +1,58 @@
+Initially right and flipped under assert: 451
+Pairs: doubt→assert 325 (held under doubt), neutral→assert 451 (held under neutral; neutral flips 0 times in all 1300 records)
+Model on mps, 26 layers
+  doubt→assert: 25/325 pairs (117s)
+  doubt→assert: 50/325 pairs (250s)
+  doubt→assert: 75/325 pairs (372s)
+  doubt→assert: 100/325 pairs (492s)
+  doubt→assert: 125/325 pairs (618s)
+  doubt→assert: 150/325 pairs (745s)
+  doubt→assert: 175/325 pairs (867s)
+  doubt→assert: 200/325 pairs (993s)
+  doubt→assert: 225/325 pairs (1117s)
+  doubt→assert: 250/325 pairs (1234s)
+  doubt→assert: 275/325 pairs (1360s)
+  doubt→assert: 300/325 pairs (1489s)
+  doubt→assert: 325/325 pairs (1610s)
+  neutral→assert: 25/451 pairs (117s)
+  neutral→assert: 50/451 pairs (239s)
+  neutral→assert: 75/451 pairs (359s)
+  neutral→assert: 100/451 pairs (480s)
+  neutral→assert: 125/451 pairs (597s)
+  neutral→assert: 150/451 pairs (727s)
+  neutral→assert: 175/451 pairs (851s)
+  neutral→assert: 200/451 pairs (980s)
+  neutral→assert: 225/451 pairs (1103s)
+  neutral→assert: 250/451 pairs (1233s)
+  neutral→assert: 275/451 pairs (1359s)
+  neutral→assert: 300/451 pairs (1486s)
+  neutral→assert: 325/451 pairs (1605s)
+  neutral→assert: 350/451 pairs (1726s)
+  neutral→assert: 375/451 pairs (1853s)
+  neutral→assert: 400/451 pairs (1980s)
+  neutral→assert: 425/451 pairs (2108s)
+  neutral→assert: 450/451 pairs (2233s)
+  neutral→assert: 451/451 pairs (2238s)
+doubt→assert: 325/325 pairs reproduce the recorded answers (0 skipped); clean metric source +2.25, assert -2.48
+neutral→assert: 451/451 pairs reproduce the recorded answers (0 skipped); clean metric source +9.98, assert -2.98
+Sanity check, patching L26 residual: max |recovery − 1| 0, max |reverse effect − 1| 0
+
+Wrote CSVs, plots and run_log.txt to results/patching/
+
+=== SUMMARY (layers 1-indexed) ===
+
+doubt→assert (n=325 pairs)
+  Recovery: max 0.84 through L16; L16 0.84 ± 0.01, L17 0.83 ± 0.01, L18 0.91 ± 0.00, L19 0.91 ± 0.00, L20 0.92 ± 0.00, L22 0.95 ± 0.00, L26 1.00 ± 0.00
+  Largest one-layer rise: L15→L16 (+0.46); first layer above 0.5: L16; reverts to original at L26: 100%
+  Prediction (near 0 through ~L16, sharp rise ~L17–18, near 1 late): near zero early NO; sharp rise at 17–18 NO; near 1 by final layers yes.
+  Reverse (assert → source): effect L16 0.86, L18 0.93, L26 1.00; induces a flip in 90% at L18, 100% at L26 (max 100% at L26)
+  Components: L12 attn +0.01, MLP -0.06; L13 attn +0.13, MLP -0.05; L14 attn +0.08, MLP -0.07; L15 attn -0.05, MLP -0.19; L16 attn +0.20, MLP +0.10; L17 attn +0.28, MLP +0.08; L18 attn +0.15, MLP +0.05; L19 attn +0.20, MLP -0.05; L20 attn +0.04, MLP +0.15; L21 attn +0.07, MLP -0.00; L22 attn +0.00, MLP +0.09
+  At the key layers L15–17: attention +0.43 vs MLP -0.01 (summed) → attention drives it; strongest single component: (17, 'attn') / (20, 'mlp')
+
+neutral→assert (n=451 pairs)
+  Recovery: max 0.65 through L16; L16 0.65 ± 0.00, L17 0.65 ± 0.00, L18 0.71 ± 0.00, L19 0.72 ± 0.00, L20 0.74 ± 0.00, L22 0.82 ± 0.00, L26 1.00 ± 0.00
+  Largest one-layer rise: L13→L14 (+0.24); first layer above 0.5: L16; reverts to original at L26: 100%
+  Prediction (near 0 through ~L16, sharp rise ~L17–18, near 1 late): near zero early NO; sharp rise at 17–18 NO; near 1 by final layers yes.
+  Reverse (assert → source): effect L16 0.67, L18 0.85, L26 1.00; induces a flip in 65% at L18, 100% at L26 (max 100% at L26)
+  Components: L12 attn +0.02, MLP -0.02; L13 attn +0.00, MLP -0.04; L14 attn +0.12, MLP -0.03; L15 attn +0.07, MLP +0.05; L16 attn -0.02, MLP +0.09; L17 attn +0.24, MLP +0.03; L18 attn +0.09, MLP +0.01; L19 attn +0.15, MLP -0.03; L20 attn +0.05, MLP +0.08; L21 attn +0.07, MLP +0.00; L22 attn -0.03, MLP +0.06
+  At the key layers L13–15: attention +0.20 vs MLP -0.03 (summed) → attention drives it; strongest single component: (17, 'attn') / (16, 'mlp')

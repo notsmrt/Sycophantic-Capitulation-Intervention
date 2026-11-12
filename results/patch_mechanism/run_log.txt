@@ -1,0 +1,69 @@
+Pairs: doubt→assert 325, neutral→assert 451; 451 distinct questions
+Top heads (head_patching stage 2 union + L16.H6, L17.H2): L13.H4, L13.H7, L14.H3, L15.H2, L15.H7, L16.H3, L16.H6, L16.H7, L17.H2, L17.H4, L17.H6
+Model on mps; L16.H3 = query head 3, reads KV head 1 (shared with query head 2)
+
+=== Part 1: direct logit attribution at the final position ===
+  100/451 questions (28s)
+  200/451 questions (56s)
+  300/451 questions (84s)
+  400/451 questions (111s)
+  451/451 questions (126s)
+  Runs not reproducing the recorded answer (skipped): 0
+  Check: sum of per-head contributions vs captured post_attention_layernorm output, max relative error 0.0044 (bf16 rounding); soft-capped linearized final logits vs real logits, max |diff| 0.16
+
+=== Part 2: doubt → assert position patching (layers 1–16) and L16.H3 key/value inputs ===
+  25/325 pairs (227s)
+  50/325 pairs (460s)
+  75/325 pairs (694s)
+  100/325 pairs (928s)
+  125/325 pairs (1170s)
+  150/325 pairs (1416s)
+  175/325 pairs (1652s)
+  200/325 pairs (1893s)
+  225/325 pairs (2132s)
+  250/325 pairs (3275s)
+  275/325 pairs (3516s)
+  300/325 pairs (3757s)
+  325/325 pairs (3982s)
+  Check: patching the final position here vs patching.py stage 1, max |Δrecovery| 5e-08
+
+Wrote CSVs, plots and run_log.txt to results/head_mechanism/
+
+=== SUMMARY (layers 1-indexed, heads 0–7) ===
+
+Part 1: what each head writes directly onto the answer letters at the final position (original letter / letter chosen under assert, each minus the mean of the other three; pre soft-cap logits, all pair questions):
+  L13.H4: original +0.02 / +0.02 / +0.03 (assert/doubt/neutral), new letter -0.02 / -0.02 / -0.02; assert−doubt -0.00±0.00, assert−neutral -0.01±0.00 → little direct effect under assert
+  L13.H7: original -0.01 / -0.00 / -0.00 (assert/doubt/neutral), new letter +0.03 / +0.03 / +0.04; assert−doubt +0.00±0.00, assert−neutral -0.00±0.01 → little direct effect under assert
+  L14.H3: original -0.00 / +0.00 / +0.00 (assert/doubt/neutral), new letter +0.01 / +0.02 / +0.01; assert−doubt +0.00±0.00, assert−neutral -0.00±0.01 → little direct effect under assert
+  L15.H2: original -0.00 / +0.01 / +0.03 (assert/doubt/neutral), new letter +0.01 / +0.01 / -0.00; assert−doubt -0.02±0.00, assert−neutral -0.03±0.01 → little direct effect under assert
+  L15.H7: original +0.00 / +0.00 / -0.00 (assert/doubt/neutral), new letter +0.00 / -0.01 / -0.03; assert−doubt +0.00±0.00, assert−neutral +0.00±0.01 → little direct effect under assert
+  L16.H3: original -0.01 / -0.00 / -0.00 (assert/doubt/neutral), new letter +0.06 / +0.05 / +0.02; assert−doubt -0.01±0.00, assert−neutral -0.01±0.01 → little direct effect under assert
+  L16.H6: original +0.03 / +0.00 / -0.07 (assert/doubt/neutral), new letter -0.06 / -0.04 / +0.00; assert−doubt +0.02±0.00, assert−neutral +0.10±0.01 → little direct effect under assert
+  L16.H7: original -0.00 / +0.02 / +0.03 (assert/doubt/neutral), new letter +0.04 / +0.03 / -0.00; assert−doubt -0.02±0.00, assert−neutral -0.03±0.00 → little direct effect under assert
+  L17.H2: original -0.09 / -0.09 / -0.07 (assert/doubt/neutral), new letter +0.01 / +0.01 / +0.01; assert−doubt -0.01±0.00, assert−neutral -0.03±0.00 → little direct effect under assert
+  L17.H4: original +0.01 / +0.02 / +0.10 (assert/doubt/neutral), new letter +0.01 / +0.00 / -0.03; assert−doubt -0.02±0.00, assert−neutral -0.09±0.01 → little direct effect under assert
+  L17.H6: original +0.01 / +0.02 / +0.03 (assert/doubt/neutral), new letter +0.01 / +0.01 / +0.00; assert−doubt -0.01±0.00, assert−neutral -0.02±0.00 → little direct effect under assert
+  Largest assert−doubt differences in original-letter DLA over all 208 heads (doubt pairs): L26.H4 -0.78, L19.H6 -0.68, L24.H2 -0.52, L18.H3 -0.37, L20.H1 -0.27 … L24.H6 +0.07, L25.H2 +0.61, L26.H5 +0.62
+
+Part 2 (doubt→assert, n=325): residual stream patched from the doubt run at aligned positions.
+  final '('           : recovery L4 -0.01, L8 +0.00, L12 -0.05, L13 +0.14, L14 +0.26, L15 +0.39, L16 +0.84 (max L16 +0.84, reverts 92%); L16.H3 shift max L14 +0.05
+  prefill, non-final  : recovery L4 +0.04, L8 +0.09, L12 +0.01, L13 +0.14, L14 +0.15, L15 +0.39, L16 +0.14 (max L15 +0.39, reverts 40%); L16.H3 shift max L15 +0.66
+  'Final'             : recovery L4 +0.02, L8 +0.04, L12 +0.04, L13 +0.03, L14 -0.03, L15 +0.02, L16 -0.01 (max L10 +0.05, reverts 6%); L16.H3 shift max L14 +0.07
+  ' answer'           : recovery L4 +0.02, L8 +0.03, L12 -0.02, L13 +0.05, L14 +0.09, L15 +0.13, L16 +0.02 (max L15 +0.13, reverts 16%); L16.H3 shift max L15 +0.26
+  ':'                 : recovery L4 -0.01, L8 +0.00, L12 -0.04, L13 +0.05, L14 +0.08, L15 +0.20, L16 +0.12 (max L15 +0.20, reverts 22%); L16.H3 shift max L15 +0.29
+  template            : recovery L4 +0.08, L8 +0.28, L12 +0.64, L13 +0.47, L14 +0.39, L15 +0.24, L16 +0.01 (max L12 +0.64, reverts 62%); L16.H3 shift max L12 +0.47
+  message             : recovery L4 +0.91, L8 +0.21, L12 +0.02, L13 -0.09, L14 +0.02, L15 -0.01, L16 -0.03 (max L1 +0.97, reverts 98%); L16.H3 shift max L1 +0.97
+  → Layer where patching each group recovers most (where the doubt-vs-assert content sits): message L1, template L12, prefill, non-final L15, final '(' L16
+    template: patching it moves L16.H3's output ≥ half of its peak (+0.47 at L12) at L8–14
+    prefill, non-final: patching it moves L16.H3's output ≥ half of its peak (+0.66 at L15) at L14–15
+  L16.H3 key/value inputs only (head output rerouted so only L16.H3 changes):
+    message + template + prefill   K only : recovery +0.05 ± 0.00, reverts 3%, L16.H3 shift +0.05 (KV head shared with H2: +0.04)
+    message + template + prefill   K+V    : recovery +0.46 ± 0.01, reverts 48%, L16.H3 shift +0.97 (KV head shared with H2: +0.51)
+    message + template + prefill   V only : recovery +0.43 ± 0.01, reverts 46%, L16.H3 shift +0.95 (KV head shared with H2: +0.49)
+    prefill (4)                    K only : recovery +0.03 ± 0.00, reverts 2%, L16.H3 shift +0.06 (KV head shared with H2: +0.03)
+    prefill (4)                    K+V    : recovery +0.34 ± 0.01, reverts 36%, L16.H3 shift +0.69 (KV head shared with H2: +0.37)
+    prefill (4)                    V only : recovery +0.34 ± 0.01, reverts 38%, L16.H3 shift +0.71 (KV head shared with H2: +0.38)
+    prefill, non-final (3)         K only : recovery +0.03 ± 0.00, reverts 2%, L16.H3 shift +0.06 (KV head shared with H2: +0.03)
+    prefill, non-final (3)         K+V    : recovery +0.31 ± 0.01, reverts 33%, L16.H3 shift +0.66 (KV head shared with H2: +0.35)
+    prefill, non-final (3)         V only : recovery +0.31 ± 0.01, reverts 34%, L16.H3 shift +0.69 (KV head shared with H2: +0.35)
+    reference: whole L16.H3 output patched +0.48

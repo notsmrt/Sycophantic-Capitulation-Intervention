@@ -1,0 +1,111 @@
+Pairs from results/patching/pairs.csv: doubt→assert 325, neutral→assert 451; screening sample 150 per type (254 distinct questions)
+
+Model on mps. Config: num_attention_heads 8, num_key_value_heads 4 (grouped-query: query heads 2k and 2k+1 share KV head k), head_dim 256, d_model 2304
+o_proj: in_features 2048 = 8 × 256; Gemma2Attention.forward transposes the attention output to (batch, seq, heads, head_dim) and reshapes it to (batch, seq, heads·head_dim), so the o_proj input is the head-major concatenation of per-head outputs
+
+=== Stage 0: consistency check (all heads of a layer vs attention-only patch) ===
+  L13: all-heads recovery +0.048, attention-only +0.048 (patching.py +0.048); max |diff| 0 (vs patching.py 6e-09), 20 pairs
+  L14: all-heads recovery +0.163, attention-only +0.163 (patching.py +0.163); max |diff| 0 (vs patching.py 4.7e-09), 20 pairs
+  L15: all-heads recovery -0.002, attention-only -0.002 (patching.py -0.002); max |diff| 0 (vs patching.py 2.4e-08), 20 pairs
+  L16: all-heads recovery +0.073, attention-only +0.073 (patching.py +0.073); max |diff| 0 (vs patching.py 6e-09), 20 pairs
+  L17: all-heads recovery +0.277, attention-only +0.277 (patching.py +0.277); max |diff| 0 (vs patching.py 3e-08), 20 pairs
+  Clean metrics vs pairs.csv: max |diff| 0
+  OK: patching all heads together reproduces the attention-only recovery.
+
+=== Stage 1: screening 40 heads (L13–17) ===
+  doubt→assert: 25/150 pairs (66s)
+  doubt→assert: 50/150 pairs (135s)
+  doubt→assert: 75/150 pairs (206s)
+  doubt→assert: 100/150 pairs (280s)
+  doubt→assert: 125/150 pairs (351s)
+  doubt→assert: 150/150 pairs (423s)
+  neutral→assert: 25/150 pairs (67s)
+  neutral→assert: 50/150 pairs (136s)
+  neutral→assert: 75/150 pairs (206s)
+  neutral→assert: 100/150 pairs (276s)
+  neutral→assert: 125/150 pairs (343s)
+  neutral→assert: 150/150 pairs (413s)
+  doubt→assert top 8: L16.H3 +0.482±0.018 (47%), L17.H4 +0.317±0.019 (32%), L16.H7 +0.266±0.019 (27%), L15.H7 +0.134±0.012 (17%), L17.H6 +0.124±0.011 (11%), L13.H7 +0.086±0.010 (7%), L15.H2 +0.056±0.012 (9%), L13.H4 +0.055±0.011 (7%)
+  neutral→assert top 8: L16.H3 +0.420±0.011 (85%), L17.H4 +0.289±0.009 (68%), L16.H7 +0.181±0.010 (44%), L15.H7 +0.116±0.008 (30%), L15.H2 +0.090±0.006 (15%), L17.H6 +0.078±0.005 (17%), L13.H7 +0.045±0.008 (11%), L14.H3 +0.035±0.007 (11%)
+  Union: 9 heads: L13.H4, L13.H7, L14.H3, L15.H2, L15.H7, L16.H3, L16.H7, L17.H4, L17.H6
+
+=== Stage 2: 9 heads on all pairs, forward and reverse; cumulative top-k ===
+  doubt→assert: 50/325 pairs (95s)
+  doubt→assert: 100/325 pairs (192s)
+  doubt→assert: 150/325 pairs (293s)
+  doubt→assert: 200/325 pairs (392s)
+  doubt→assert: 250/325 pairs (489s)
+  doubt→assert: 300/325 pairs (590s)
+  doubt→assert: 325/325 pairs (638s)
+  neutral→assert: 50/451 pairs (95s)
+  neutral→assert: 100/451 pairs (191s)
+  neutral→assert: 150/451 pairs (290s)
+  neutral→assert: 200/451 pairs (391s)
+  neutral→assert: 250/451 pairs (492s)
+  neutral→assert: 300/451 pairs (591s)
+  neutral→assert: 350/451 pairs (687s)
+  neutral→assert: 400/451 pairs (788s)
+  neutral→assert: 450/451 pairs (889s)
+  neutral→assert: 451/451 pairs (891s)
+
+=== Stage 3: attention of the final position for 9 heads ===
+  attentions: 26 layers, each (1, 8, 104, 104) = (batch, query heads, query pos, key pos); repeat_kv expands the 4 KV heads before the softmax, so weights are per query head. Rows sum to 1.000
+  token groups (104 tokens, doubt run): turn2_msg 6, prev_answer 3, question 72, other 23 (other includes BOS 1 and prefill 4)
+    turn2_msg: 'Are you sure about that?' | prev_answer: '(D)'
+  doubt→assert: 50 pairs
+  neutral→assert: 50 pairs
+
+Wrote CSVs, heatmap, cumulative plot, attention charts and run_log.txt to results/head_patching/
+
+=== SUMMARY (layers 1-indexed, heads 0–7) ===
+
+1. Which heads matter (screen, mean recovery from patching one head):
+  doubt→assert: L16.H3 +0.48, L17.H4 +0.32, L16.H7 +0.27, L15.H7 +0.13, L17.H6 +0.12; 9/40 heads above 0.05, most negative L16.H6 -0.39
+  neutral→assert: L16.H3 +0.42, L17.H4 +0.29, L16.H7 +0.18, L15.H7 +0.12, L15.H2 +0.09; 6/40 heads above 0.05, most negative L16.H6 -0.15
+  Shared between the two top-8 lists: 7 (L16.H3, L17.H4, L16.H7, L15.H7, L17.H6, L13.H7, L15.H2); Spearman correlation of all 40 head recoveries across pair types: 0.83
+
+2. Top-k heads together vs the full residual stream:
+  doubt→assert (residual stream L16: recovery 0.84, reverts 92%; L17, after all screened heads: recovery 0.83, reverts 89%):
+    k=1: recovery +0.48 ± 0.01 (57% of L16, 58% of L17 residual), reverts 49%; held-out pairs +0.48 (n=117)
+    k=2: recovery +0.67 ± 0.01 (79% of L16, 81% of L17 residual), reverts 69%; held-out pairs +0.67 (n=117)
+    k=3: recovery +0.73 ± 0.01 (87% of L16, 89% of L17 residual), reverts 77%; held-out pairs +0.72 (n=117)
+    k=5: recovery +0.79 ± 0.01 (93% of L16, 95% of L17 residual), reverts 82%; held-out pairs +0.79 (n=117)
+    k=8: recovery +0.87 ± 0.01 (103% of L16, 105% of L17 residual), reverts 90%; held-out pairs +0.87 (n=117)
+    heads: L16.H3 L17.H4 L16.H7 L15.H7 L17.H6 L13.H7 L15.H2 L13.H4
+  neutral→assert (residual stream L14: recovery 0.42, reverts 91%; L17, after all screened heads: recovery 0.65, reverts 100%):
+    k=1: recovery +0.42 ± 0.01 (98% of L14, 64% of L17 residual), reverts 86%; held-out pairs +0.40 (n=197)
+    k=2: recovery +0.50 ± 0.00 (119% of L14, 77% of L17 residual), reverts 98%; held-out pairs +0.50 (n=197)
+    k=3: recovery +0.55 ± 0.00 (131% of L14, 85% of L17 residual), reverts 100%; held-out pairs +0.56 (n=197)
+    k=5: recovery +0.60 ± 0.00 (141% of L14, 92% of L17 residual), reverts 100%; held-out pairs +0.60 (n=197)
+    k=8: recovery +0.65 ± 0.00 (152% of L14, 99% of L17 residual), reverts 100%; held-out pairs +0.65 (n=197)
+    heads: L16.H3 L17.H4 L16.H7 L15.H7 L15.H2 L17.H6 L13.H7 L14.H3
+
+3. Necessary and sufficient? Forward (source → assert): restoring the head's held-answer output in the assert run; a revert means its assert-run output is needed for the flip. Reverse (assert → source): writing the assert-run output into the held run; a flip means it is enough to cause one.
+  doubt→assert (all 325 pairs), single heads:
+    L16.H3: forward recovery +0.48, reverts 49%; reverse effect +0.34, flips 35%
+    L17.H4: forward recovery +0.32, reverts 32%; reverse effect +0.21, flips 22%
+    L16.H7: forward recovery +0.26, reverts 27%; reverse effect +0.17, flips 15%
+    top 8 together: forward reverts 90% (recovery +0.87); reverse flips 84% (effect +0.87) → largely necessary, largely sufficient
+    held-out pairs only (n=117): reverts 91%, reverse flips 85%
+  neutral→assert (all 451 pairs), single heads:
+    L16.H3: forward recovery +0.42, reverts 86%; reverse effect +0.08, flips 0%
+    L17.H4: forward recovery +0.28, reverts 68%; reverse effect +0.04, flips 0%
+    L16.H7: forward recovery +0.18, reverts 44%; reverse effect +0.04, flips 0%
+    top 8 together: forward reverts 100% (recovery +0.65); reverse flips 11% (effect +0.45) → largely necessary, partly sufficient
+    held-out pairs only (n=197): reverts 100%, reverse flips 13%
+
+4. Attention of the final position (mass on each token group, assert vs source run):
+  doubt→assert pairs (n=50):
+    L16.H3: turn-2 0.06/0.05, previous 0.00/0.00, question 0.01/0.01, template 0.93/0.94 (assert/doubt; of template: BOS 0.10/0.13, prefill 'Final answer: (' 0.64/0.60). Main content target: turn-2 user message; largest change: turn-2 user message +0.01 ± 0.00
+    L17.H4: turn-2 0.04/0.02, previous 0.03/0.08, question 0.46/0.44, template 0.46/0.47 (assert/doubt; of template: BOS 0.03/0.03, prefill 'Final answer: (' 0.00/0.00). Main content target: question + options; largest change: previous answer (X) -0.05 ± 0.01
+    L16.H7: turn-2 0.12/0.10, previous 0.02/0.05, question 0.27/0.24, template 0.59/0.61 (assert/doubt; of template: BOS 0.09/0.09, prefill 'Final answer: (' 0.11/0.11). Main content target: question + options; largest change: previous answer (X) -0.03 ± 0.00
+    L15.H7: turn-2 0.06/0.06, previous 0.01/0.03, question 0.14/0.10, template 0.78/0.81 (assert/doubt; of template: BOS 0.15/0.16, prefill 'Final answer: (' 0.22/0.13). Main content target: question + options; largest change: question + options +0.04 ± 0.00
+    L17.H6: turn-2 0.04/0.05, previous 0.04/0.09, question 0.53/0.47, template 0.38/0.38 (assert/doubt; of template: BOS 0.19/0.12, prefill 'Final answer: (' 0.01/0.02). Main content target: question + options; largest change: question + options +0.06 ± 0.01
+  neutral→assert pairs (n=50):
+    L16.H3: turn-2 0.05/0.10, previous 0.00/0.00, question 0.01/0.01, template 0.94/0.89 (assert/neutral; of template: BOS 0.11/0.14, prefill 'Final answer: (' 0.65/0.54). Main content target: turn-2 user message; largest change: template / other +0.05 ± 0.00
+    L17.H4: turn-2 0.06/0.00, previous 0.03/0.53, question 0.46/0.26, template 0.45/0.20 (assert/neutral; of template: BOS 0.04/0.06, prefill 'Final answer: (' 0.00/0.00). Main content target: question + options; largest change: previous answer (X) -0.50 ± 0.02
+    L16.H7: turn-2 0.12/0.14, previous 0.02/0.10, question 0.28/0.24, template 0.58/0.52 (assert/neutral; of template: BOS 0.08/0.25, prefill 'Final answer: (' 0.10/0.04). Main content target: question + options; largest change: previous answer (X) -0.08 ± 0.01
+    L15.H7: turn-2 0.06/0.23, previous 0.01/0.07, question 0.14/0.06, template 0.78/0.64 (assert/neutral; of template: BOS 0.15/0.09, prefill 'Final answer: (' 0.22/0.15). Main content target: turn-2 user message; largest change: turn-2 user message -0.16 ± 0.01
+    L15.H2: turn-2 0.19/0.04, previous 0.05/0.61, question 0.32/0.11, template 0.44/0.24 (assert/neutral; of template: BOS 0.16/0.05, prefill 'Final answer: (' 0.04/0.01). Main content target: previous answer (X); largest change: previous answer (X) -0.57 ± 0.01
+
+Notes: the top heads were chosen on the screening sample, which is part of 'all pairs' in stage 2; held-out numbers exclude every screened question. Head recoveries are not additive: heads patched together interact through later layers.

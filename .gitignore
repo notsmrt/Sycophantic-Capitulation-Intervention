@@ -1,0 +1,19 @@
+# Environment / OS
+.venv/
+__pycache__/
+.DS_Store
+.claude/
+
+# Activations (4 × 311 MB, over GitHub's file limit). Regenerate with collect.py;
+# to be hosted on Hugging Face. data/records.jsonl is small and tracked.
+data/*.npy
+
+# Smoke-test runs on small subsets
+results/**/test_*/
+results/**/subset_n*/
+
+# Phase 1 (superseded by the Phase 2 data). Delete these lines if the write-up cites
+# the Phase 1 dose-dependence result.
+results.jsonl
+analyze.py
+phase1_logit_lens*.png

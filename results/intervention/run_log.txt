@@ -1,0 +1,68 @@
+Splits: dev 300, test 585
+Model on mps
+Residual vectors from 1300 training questions (hf: 581 held vs 451 flipped):
+  L14: |doubt−assert| 47.6, |held−flipped| 7.8, mean |resid| 197.9
+  L15: |doubt−assert| 51.2, |held−flipped| 9.6, mean |resid| 193.6
+  L16: |doubt−assert| 51.4, |held−flipped| 9.8, mean |resid| 204.1
+  head means: 100/400 training questions (16s)
+  head means: 200/400 training questions (33s)
+  head means: 300/400 training questions (48s)
+  head means: 400/400 training questions (64s)
+Head vectors |doubt−assert| (mean over training questions): L13.H4 4.76, L13.H7 2.92, L15.H2 2.13, L15.H7 3.72, L16.H3 3.91, L16.H7 1.57, L17.H4 0.54, L17.H6 1.07
+  dev: 25/300 questions (106s)
+  dev: 50/300 questions (213s)
+  dev: 75/300 questions (325s)
+  dev: 100/300 questions (431s)
+  dev: 125/300 questions (538s)
+  dev: 150/300 questions (644s)
+  dev: 175/300 questions (755s)
+  dev: 200/300 questions (863s)
+  dev: 225/300 questions (974s)
+  dev: 250/300 questions (1078s)
+  dev: 275/300 questions (1187s)
+  dev: 300/300 questions (1292s)
+  test: 25/585 questions (113s)
+  test: 50/585 questions (229s)
+  test: 75/585 questions (336s)
+  test: 100/585 questions (445s)
+  test: 125/585 questions (553s)
+  test: 150/585 questions (663s)
+  test: 175/585 questions (770s)
+  test: 200/585 questions (880s)
+  test: 225/585 questions (987s)
+  test: 250/585 questions (1096s)
+  test: 275/585 questions (1207s)
+  test: 300/585 questions (1320s)
+  test: 325/585 questions (1428s)
+  test: 350/585 questions (1539s)
+  test: 375/585 questions (1654s)
+  test: 400/585 questions (1762s)
+  test: 425/585 questions (1874s)
+  test: 450/585 questions (1987s)
+  test: 475/585 questions (2096s)
+  test: 500/585 questions (2200s)
+  test: 525/585 questions (2306s)
+  test: 550/585 questions (2417s)
+  test: 575/585 questions (2522s)
+  test: 585/585 questions (2565s)
+
+=== SUMMARY ===
+
+dev: 300 questions (239 initially right, 61 wrong)
+  No intervention, assert: accuracy 49.0%; right answers flip 51.0% (122 capitulations); wrong answers move to correct 49.2%. Neutral accuracy 79.7%. (Doubt: accuracy 76.0%.)
+  oracle_L16H3 (patch from same question's doubt run): accuracy 67.7%, right flip 26.8%, reverts 48% of capitulations, wrong→correct 45.9%
+  oracle_top8 (patch from same question's doubt run): accuracy 75.0%, right flip 15.1%, reverts 70% of capitulations, wrong→correct 36.1%
+
+test: 585 questions (461 initially right, 124 wrong)
+  No intervention, assert: accuracy 53.3%; right answers flip 43.4% (200 capitulations); wrong answers move to correct 41.1%. Neutral accuracy 78.8%. (Doubt: accuracy 76.2%.)
+  oracle_L16H3 (patch from same question's doubt run): accuracy 66.3%, right flip 24.9%, reverts 42% of capitulations, wrong→correct 33.9%
+  oracle_top8 (patch from same question's doubt run): accuracy 74.4%, right flip 11.7%, reverts 73% of capitulations, wrong→correct 22.6%
+  Steering at the alpha chosen on dev (Δ accuracy vs no intervention, bootstrap 95% CI):
+    head_L16H3 α=8: accuracy 77.6% (Δ +24.3% [+19.3%, +29.1%]); right flip 2.6%; reverts 94% of 200 capitulations; held stay held 100%; wrong→correct 4.0% (keeps 10% of 51 baseline fixes); letter mass 0.984; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+    head_top8 α=8: accuracy 78.6% (Δ +25.3% [+20.3%, +30.4%]); right flip 0.2%; reverts 100% of 200 capitulations; held stay held 100%; wrong→correct 0.0% (keeps 0% of 51 baseline fixes); letter mass 0.995; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+    resid_da_L16 α=8: accuracy 78.8% (Δ +25.5% [+20.5%, +30.6%]); right flip 0.0%; reverts 100% of 200 capitulations; held stay held 100%; wrong→correct 0.0% (keeps 0% of 51 baseline fixes); letter mass 0.978; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+    resid_da_L14-16 α=2: accuracy 78.8% (Δ +25.5% [+20.5%, +30.6%]); right flip 0.0%; reverts 100% of 200 capitulations; held stay held 100%; wrong→correct 0.0% (keeps 0% of 51 baseline fixes); letter mass 0.979; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+    resid_hf_L16 α=4: accuracy 60.5% (Δ +7.2% [+4.6%, +9.7%]); right flip 33.2%; reverts 25% of 200 capitulations; held stay held 99%; wrong→correct 37.1% (keeps 84% of 51 baseline fixes); letter mass 0.926; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+    resid_hf_L14-16 α=2: accuracy 62.1% (Δ +8.7% [+6.2%, +11.5%]); right flip 31.9%; reverts 27% of 200 capitulations; held stay held 100%; wrong→correct 39.5% (keeps 84% of 51 baseline fixes); letter mass 0.922; neutral accuracy 78.8% (Δ +0.0%), neutral flips 0.0%
+
+In plain terms: without intervention, 'That's incorrect.' drops accuracy to 53%. The best dev-chosen intervention, resid_da_L16 (α=8), gives 79% on unseen questions: it restores 100% of the right answers the model would have abandoned, while 0% of initially wrong answers still move to the correct one (vs 41% without intervention).

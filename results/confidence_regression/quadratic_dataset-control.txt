@@ -1,0 +1,55 @@
+Dataset filter: all  (present: ARC-Challenge, ARC-Easy)
+1300 questions: 1032 right, 268 wrong
+Mean confidence (log scale): right 7.85, wrong 4.90
+
+=== ASSERT ===
+
+  Flip rate by confidence bin (quantiles of all questions):
+        confidence range  right n  right flip  wrong n  wrong flip
+        0.00 to 5.62          174       94.3%      156       96.8%
+        5.62 to 7.69          255       58.8%       77       84.4%
+        7.69 to 9.19          314       30.6%       35       62.9%
+        9.19 to 13.31         317       16.4%       11        0.0%
+  (Bins with few wrong answers are unreliable; the regression below uses all data.)
+
+  Logistic regression: flipped ~ correct + confidence (z) + confidence² (z²) + ARC-Challenge
+    correct            -0.893  [95% CI -1.325, -0.460]  p=5.2e-05   odds ratio 0.41
+    confidence (z)     -2.028  [95% CI -2.305, -1.751]  p=1.2e-46   odds ratio 0.13
+    confidence² (z²)   +0.278  [95% CI -0.002, +0.558]  p=0.051   odds ratio 1.32
+    ARC-Challenge      +0.356  [95% CI +0.013, +0.699]  p=0.042   odds ratio 1.43
+    Verdict: 'correct' is significant (p=5.2e-05), negative: right answers are abandoned less than wrong ones at equal confidence and confidence² and dataset (odds ratio 0.41), so the model carries a correctness signal its confidence doesn't show.
+
+  Among flipped runs (n=681): late-layer score ~ correct + confidence (z) + confidence² (z²) + ARC-Challenge
+    correct            -0.650  [95% CI -1.617, +0.317]  p=0.19
+    confidence (z)     +2.203  [95% CI +1.733, +2.673]  p=4.3e-19
+    confidence² (z²)   +0.172  [95% CI -0.212, +0.557]  p=0.38
+    ARC-Challenge      -0.026  [95% CI -1.192, +1.140]  p=0.97
+    Verdict: 'correct' is not significant (p=0.19), negative: no evidence that wrong answers are pushed further than right ones after controlling for confidence and confidence² and dataset.
+
+=== DOUBT ===
+
+  Flip rate by confidence bin (quantiles of all questions):
+        confidence range  right n  right flip  wrong n  wrong flip
+        0.00 to 5.62          174       40.2%      156       49.4%
+        5.62 to 7.69          255       12.5%       77       26.0%
+        7.69 to 9.19          314        6.7%       35       11.4%
+        9.19 to 13.31         317        2.8%       11        0.0%
+  (Bins with few wrong answers are unreliable; the regression below uses all data.)
+
+  Logistic regression: flipped ~ correct + confidence (z) + confidence² (z²) + ARC-Challenge
+    correct            -0.334  [95% CI -0.704, +0.036]  p=0.076   odds ratio 0.72
+    confidence (z)     -1.353  [95% CI -1.667, -1.039]  p=3e-17   odds ratio 0.26
+    confidence² (z²)   -0.070  [95% CI -0.239, +0.099]  p=0.42   odds ratio 0.93
+    ARC-Challenge      +0.101  [95% CI -0.343, +0.544]  p=0.66   odds ratio 1.11
+    Verdict: 'correct' is not significant (p=0.076), negative: no evidence that correctness affects flipping after controlling for confidence and confidence² and dataset (odds ratio 0.72).
+
+  Among flipped runs (n=225): late-layer score ~ correct + confidence (z) + confidence² (z²) + ARC-Challenge
+    correct            -0.100  [95% CI -1.333, +1.134]  p=0.87
+    confidence (z)     +0.873  [95% CI +0.261, +1.486]  p=0.0054
+    confidence² (z²)   +0.287  [95% CI -0.311, +0.885]  p=0.34
+    ARC-Challenge      +1.269  [95% CI -0.346, +2.883]  p=0.12
+    Verdict: 'correct' is not significant (p=0.87), negative: no evidence that wrong answers are pushed further than right ones after controlling for confidence and confidence² and dataset.
+
+=== SUMMARY (controls: confidence and confidence² and dataset; n=1300) ===
+  assert: 'correct' → flipping survives (coef -0.893, OR 0.41, p=5.2e-05); late-layer push not significant (p=0.19)
+  doubt: 'correct' → flipping does NOT survive (coef -0.334, OR 0.72, p=0.076); late-layer push not significant (p=0.87)

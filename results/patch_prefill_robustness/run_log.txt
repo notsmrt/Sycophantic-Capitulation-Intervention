@@ -1,0 +1,90 @@
+Initially right: 1032; excluding 254 questions from head_patching's screening sample → 778 held-out questions
+Original top-8 heads: doubt: L16.H3 L17.H4 L16.H7 L15.H7 L17.H6 L13.H7 L15.H2 L13.H4; neutral: L16.H3 L17.H4 L16.H7 L15.H7 L15.H2 L17.H6 L13.H7 L14.H3
+Model on mps, 26 layers, 8 heads
+
+################ prefill "(" → results/robustness_prefill/paren/
+  example ending: "n>user\nThat's incorrect.<end_of_turn>\n<start_of_turn>model\n("
+
+=== Step 1: behaviour ===
+  behaviour: 200/778 questions (46s)
+  behaviour: 400/778 questions (92s)
+  behaviour: 600/778 questions (161s)
+  behaviour: 778/778 questions (230s)
+  assert   flips  21.2% ("Final answer: (":  25.3%); same flip outcome as original on 91%; letter prob mass 0.765
+  doubt    flips   2.2% ("Final answer: (":  10.5%); same flip outcome as original on 91%; letter prob mass 0.698
+  neutral  flips   0.0% ("Final answer: (":   0.0%); same flip outcome as original on 100%; letter prob mass 0.998
+  doubt→assert pairs: 149 (original 117; 70 in both, 60% of the original pairs survive)
+  neutral→assert pairs: 165 (original 197; 147 in both, 75% of the original pairs survive)
+
+=== Step 2: patching (up to 150 pairs per type) ===
+  doubt→assert: 25/149 pairs (257s)
+  doubt→assert: 50/149 pairs (563s)
+  doubt→assert: 75/149 pairs (9431s)
+  doubt→assert: 100/149 pairs (9600s)
+  doubt→assert: 125/149 pairs (9769s)
+  doubt→assert: 149/149 pairs (9932s)
+  neutral→assert: 25/150 pairs (156s)
+  neutral→assert: 50/150 pairs (323s)
+  neutral→assert: 75/150 pairs (493s)
+  neutral→assert: 100/150 pairs (661s)
+  neutral→assert: 125/150 pairs (829s)
+  neutral→assert: 150/150 pairs (997s)
+  Sanity check, L26 residual: max |recovery − 1| 0
+
+################ prefill "The answer is (" → results/robustness_prefill/the_answer_is/
+  example ending: 'incorrect.<end_of_turn>\n<start_of_turn>model\nThe answer is ('
+
+=== Step 1: behaviour ===
+  behaviour: 200/778 questions (45s)
+  behaviour: 400/778 questions (93s)
+  behaviour: 600/778 questions (140s)
+  behaviour: 778/778 questions (180s)
+  assert   flips  21.7% ("Final answer: (":  25.3%); same flip outcome as original on 94%; letter prob mass 0.973
+  doubt    flips   1.4% ("Final answer: (":  10.5%); same flip outcome as original on 91%; letter prob mass 0.987
+  neutral  flips   0.0% ("Final answer: (":   0.0%); same flip outcome as original on 100%; letter prob mass 1.000
+  doubt→assert pairs: 158 (original 117; 83 in both, 71% of the original pairs survive)
+  neutral→assert pairs: 169 (original 197; 160 in both, 81% of the original pairs survive)
+
+=== Step 2: patching (up to 150 pairs per type) ===
+  doubt→assert: 25/150 pairs (163s)
+  doubt→assert: 50/150 pairs (332s)
+  doubt→assert: 75/150 pairs (504s)
+  doubt→assert: 100/150 pairs (675s)
+  doubt→assert: 125/150 pairs (845s)
+  doubt→assert: 150/150 pairs (1016s)
+  neutral→assert: 25/150 pairs (160s)
+  neutral→assert: 50/150 pairs (329s)
+  neutral→assert: 75/150 pairs (504s)
+  neutral→assert: 100/150 pairs (676s)
+  neutral→assert: 125/150 pairs (846s)
+  neutral→assert: 150/150 pairs (1019s)
+  Sanity check, L26 residual: max |recovery − 1| 0
+
+Wrote CSVs, plots and run_log.txt to results/robustness_prefill/
+
+=== SUMMARY (layers 1-indexed, heads 0–7; held-out questions only) ===
+Reference: "Final answer: (" (original). Original numbers are over all original pairs.
+
+--- prefill "(" ---
+1. Behaviour: assert flips 21% (was 25%); doubt flips 2% (was 11%); neutral flips 0% (was 0%); pairs doubt→assert 149, neutral→assert 165
+  doubt→assert (n=149 patched):
+    2. Residual: max through L12 0.03 (was 0.00); first > 0.5 at L16 (was L16); largest jump L15→L16 +0.39 (was L15→L16 +0.46); L16 0.84 (was 0.84)
+    3. Heads: top 5 L16.H3 +0.51, L17.H4 +0.35, L16.H7 +0.29, L15.H7 +0.13, L14.H1 +0.12; L16.H3 rank 1; Spearman vs original screen 0.92; top-8 overlap 7/8; most negative L16.H6 -0.29
+    4. Original top-k heads: k=1 recovery +0.51 (was +0.48), reverts 55% (was 49%), reverse flips 38% (was 35%); k=8 recovery +0.93 (was +0.87), reverts 95% (was 90%), reverse flips 85% (was 84%)
+  neutral→assert (n=150 patched):
+    2. Residual: max through L12 0.07 (was 0.01); first > 0.5 at L14 (was L16); largest jump L13→L14 +0.29 (was L13→L14 +0.24); L16 0.92 (was 0.65)
+    3. Heads: top 5 L16.H3 +0.53, L17.H4 +0.45, L16.H7 +0.28, L15.H7 +0.15, L15.H2 +0.14; L16.H3 rank 1; Spearman vs original screen 0.80; top-8 overlap 6/8; most negative L16.H6 -0.21
+    4. Original top-k heads: k=1 recovery +0.53 (was +0.42), reverts 89% (was 86%), reverse flips 0% (was 0%); k=8 recovery +0.88 (was +0.65), reverts 100% (was 100%), reverse flips 6% (was 11%)
+
+--- prefill "The answer is (" ---
+1. Behaviour: assert flips 22% (was 25%); doubt flips 1% (was 11%); neutral flips 0% (was 0%); pairs doubt→assert 158, neutral→assert 169
+  doubt→assert (n=150 patched):
+    2. Residual: max through L12 0.00 (was 0.00); first > 0.5 at L16 (was L16); largest jump L15→L16 +0.47 (was L15→L16 +0.46); L16 0.83 (was 0.84)
+    3. Heads: top 5 L16.H3 +0.54, L17.H4 +0.23, L16.H7 +0.17, L17.H6 +0.13, L14.H1 +0.10; L16.H3 rank 1; Spearman vs original screen 0.91; top-8 overlap 6/8; most negative L16.H6 -0.27
+    4. Original top-k heads: k=1 recovery +0.54 (was +0.48), reverts 59% (was 49%), reverse flips 25% (was 35%); k=8 recovery +0.81 (was +0.87), reverts 88% (was 90%), reverse flips 69% (was 84%)
+  neutral→assert (n=150 patched):
+    2. Residual: max through L12 0.03 (was 0.01); first > 0.5 at L14 (was L16); largest jump L13→L14 +0.26 (was L13→L14 +0.24); L16 0.72 (was 0.65)
+    3. Heads: top 5 L16.H3 +0.47, L17.H4 +0.31, L16.H7 +0.22, L15.H7 +0.13, L15.H2 +0.11; L16.H3 rank 1; Spearman vs original screen 0.95; top-8 overlap 7/8; most negative L16.H6 -0.16
+    4. Original top-k heads: k=1 recovery +0.47 (was +0.42), reverts 85% (was 86%), reverse flips 0% (was 0%); k=8 recovery +0.70 (was +0.65), reverts 100% (was 100%), reverse flips 23% (was 11%)
+
+In plain words: compare each line to its 'was' value. The findings are robust to the prefill if the residual rise stays in L13–17, L16.H3 stays at or near the top with a high Spearman correlation, and the top-8 heads still revert most assert flips (and, for doubt pairs, still induce most flips in reverse).

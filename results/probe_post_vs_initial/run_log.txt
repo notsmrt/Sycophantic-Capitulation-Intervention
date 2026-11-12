@@ -1,0 +1,36 @@
+Initially right: n=1032, flipped=451 (43.7%); layers 1-indexed
+  L 1: post-assert term +0.37 [-0.03, +0.78] p=0.072   initial term +0.00 p=0.99   (AUROC initial 0.608, post 0.611; 6s)
+  L 2: post-assert term +0.57 [+0.26, +0.87] p=0.00026   initial term -0.11 p=0.46   (AUROC initial 0.613, post 0.626; 5s)
+  L 3: post-assert term +0.49 [+0.20, +0.77] p=0.00074   initial term -0.00 p=0.98   (AUROC initial 0.621, post 0.629; 5s)
+  L 4: post-assert term +0.31 [+0.03, +0.60] p=0.032   initial term +0.15 p=0.29   (AUROC initial 0.619, post 0.625; 6s)
+  L 5: post-assert term +0.18 [-0.02, +0.38] p=0.078   initial term +0.29 p=0.0033   (AUROC initial 0.618, post 0.621; 5s)
+  L 6: post-assert term +0.08 [-0.19, +0.35] p=0.57   initial term +0.46 p=0.001   (AUROC initial 0.644, post 0.632; 5s)
+  L 7: post-assert term +0.04 [-0.22, +0.29] p=0.78   initial term +0.54 p=3.7e-05   (AUROC initial 0.652, post 0.635; 5s)
+  L 8: post-assert term +0.40 [+0.16, +0.64] p=0.00093   initial term +0.25 p=0.039   (AUROC initial 0.656, post 0.661; 4s)
+  L 9: post-assert term +0.09 [-0.19, +0.37] p=0.53   initial term +0.51 p=0.0004   (AUROC initial 0.657, post 0.646; 4s)
+  L10: post-assert term +0.32 [+0.02, +0.63] p=0.036   initial term +0.34 p=0.027   (AUROC initial 0.666, post 0.665; 4s)
+  L11: post-assert term +0.23 [-0.09, +0.56] p=0.16   initial term +0.43 p=0.01   (AUROC initial 0.672, post 0.667; 4s)
+  L12: post-assert term +0.46 [+0.20, +0.71] p=0.00051   initial term +0.24 p=0.069   (AUROC initial 0.674, post 0.676; 4s)
+  L13: post-assert term +0.35 [+0.08, +0.62] p=0.011   initial term +0.45 p=0.0011   (AUROC initial 0.691, post 0.689; 4s)
+  L14: post-assert term +0.60 [+0.37, +0.83] p=2.6e-07   initial term +0.40 p=0.00058   (AUROC initial 0.710, post 0.730; 4s)
+  L15: post-assert term +0.44 [+0.20, +0.67] p=0.00033   initial term +1.05 p=7.2e-18   (AUROC initial 0.800, post 0.775; 3s)
+  L16: post-assert term +0.50 [+0.25, +0.75] p=9.4e-05   initial term +0.99 p=4.2e-14   (AUROC initial 0.803, post 0.782; 3s)
+  L17: post-assert term +0.73 [+0.46, +1.00] p=1.8e-07   initial term +1.17 p=3.7e-18   (AUROC initial 0.841, post 0.824; 3s)
+  L18: post-assert term +2.84 [+2.44, +3.25] p=1.3e-42   initial term +0.40 p=0.007   (AUROC initial 0.852, post 0.933; 4s)
+  L19: post-assert term +3.10 [+2.66, +3.54] p=3.7e-43   initial term +0.60 p=0.00021   (AUROC initial 0.867, post 0.949; 4s)
+  L20: post-assert term +3.09 [+2.65, +3.53] p=4e-43   initial term +0.55 p=0.00068   (AUROC initial 0.865, post 0.950; 4s)
+  L21: post-assert term +3.39 [+2.89, +3.90] p=1.1e-39   initial term +0.73 p=2.8e-05   (AUROC initial 0.875, post 0.961; 4s)
+  L22: post-assert term +4.02 [+3.44, +4.60] p=3.2e-42   initial term +0.42 p=0.022   (AUROC initial 0.870, post 0.968; 4s)
+  L23: post-assert term +3.90 [+3.30, +4.50] p=2.8e-37   initial term +0.80 p=1.8e-05   (AUROC initial 0.878, post 0.967; 4s)
+  L24: post-assert term +4.36 [+3.71, +5.01] p=1.1e-39   initial term +0.45 p=0.034   (AUROC initial 0.879, post 0.973; 4s)
+  L25: post-assert term +4.58 [+3.89, +5.27] p=1.7e-38   initial term +0.38 p=0.049   (AUROC initial 0.874, post 0.975; 4s)
+  L26: post-assert term +3.91 [+3.33, +4.49] p=3.5e-40   initial term +0.33 p=0.091   (AUROC initial 0.871, post 0.965; 4s)
+
+Reproduction check vs probe_initial_v2 (same folds): max |ΔAUROC| 1.1e-16
+Wrote CSV, plot and run_log.txt to results/post_vs_initial/
+
+=== SUMMARY ===
+Post-assert term significant (p<0.05, positive) at: L2–4, L8, L10, L12–26; with dataset covariate: L2–3, L8, L10, L12–26
+  L1–17: coefficients +0.04 to +0.73, significant at 11/17 layers
+  L18: +2.84 [+2.44, +3.25] p=1.3e-42; L18–26 coefficients +2.84 to +4.58
+  → Expectation (near zero through L17, significant from L18): NOT confirmed — some early layers add information beyond the initial turn; every layer from L18 does.

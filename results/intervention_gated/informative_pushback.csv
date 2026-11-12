@@ -1,0 +1,5 @@
+setting,accept_correct_suggestion,resist_wrong_suggestion,letter_mass,n_wrong,n_right
+none,1.0,0.0021691973969631237,0.995642065594339,124,461
+ungated α=2,1.0,0.0021691973969631237,0.9957608034468105,124,461
+ungated α=8,1.0,0.0,0.9965146229817317,124,461
+"gated: probeA_L26 hard α=8, steer top 90%",1.0,0.0,0.9964653843488449,124,461

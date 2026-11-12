@@ -1,0 +1,79 @@
+/Users/skumar/Projects/syncap/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+1300 questions, 26 layers, d_model 2304 (layers printed 1-indexed)
+
+=== all questions: n=1300, flipped=681 (52.4%) ===
+  Initial-margin baseline AUROC: 0.857 ± 0.016
+  layer  1: probe 0.636 ± 0.033   lens 0.469 ± 0.011   CLEAR C=0.0001  (4s)
+  layer  2: probe 0.642 ± 0.028   lens 0.512 ± 0.011   CLEAR C=0.001  (3s)
+  layer  3: probe 0.641 ± 0.032   lens 0.495 ± 0.030   CLEAR C=0.001  (4s)
+  layer  4: probe 0.632 ± 0.037   lens 0.505 ± 0.023   CLEAR C=0.001  (4s)
+  layer  5: probe 0.624 ± 0.027   lens 0.511 ± 0.021   CLEAR C=0.001  (4s)
+  layer  6: probe 0.662 ± 0.037   lens 0.511 ± 0.027   CLEAR C=0.001  (3s)
+  layer  7: probe 0.667 ± 0.030   lens 0.490 ± 0.020   CLEAR C=0.001  (3s)
+  layer  8: probe 0.688 ± 0.039   lens 0.484 ± 0.047   CLEAR C=0.001  (3s)
+  layer  9: probe 0.681 ± 0.039   lens 0.516 ± 0.033   CLEAR C=0.001  (3s)
+  layer 10: probe 0.708 ± 0.034   lens 0.509 ± 0.030   CLEAR C=0.001  (3s)
+  layer 11: probe 0.701 ± 0.036   lens 0.516 ± 0.033   CLEAR C=0.001  (3s)
+  layer 12: probe 0.714 ± 0.040   lens 0.478 ± 0.028   CLEAR C=0.001  (3s)
+  layer 13: probe 0.716 ± 0.038   lens 0.485 ± 0.029   CLEAR C=0.001  (3s)
+  layer 14: probe 0.762 ± 0.027   lens 0.470 ± 0.030   CLEAR C=0.001  (2s)
+  layer 15: probe 0.806 ± 0.020   lens 0.492 ± 0.032   CLEAR C=0.001  (2s)
+  layer 16: probe 0.808 ± 0.016   lens 0.481 ± 0.023   CLEAR C=0.001  (2s)
+  layer 17: probe 0.847 ± 0.020   lens 0.495 ± 0.029   CLEAR C=0.001  (2s)
+  layer 18: probe 0.942 ± 0.013   lens 0.789 ± 0.024   CLEAR C=0.01  (2s)
+  layer 19: probe 0.958 ± 0.015   lens 0.820 ± 0.025   CLEAR C=0.01  (2s)
+  layer 20: probe 0.959 ± 0.015   lens 0.887 ± 0.017   CLEAR C=0.01  (2s)
+  layer 21: probe 0.968 ± 0.013   lens 0.832 ± 0.025   CLEAR C=0.01  (2s)
+  layer 22: probe 0.973 ± 0.009   lens 0.976 ± 0.007         C=0.1  (2s)
+  layer 23: probe 0.974 ± 0.006   lens 0.991 ± 0.004         C=0.1  (2s)
+  layer 24: probe 0.980 ± 0.004   lens 0.994 ± 0.003         C=0.1  (2s)
+  layer 25: probe 0.980 ± 0.004   lens 0.999 ± 0.000         C=0.01  (2s)
+  layer 26: probe 0.973 ± 0.004   lens 1.000 ± 0.000         C=0.01  (2s)
+
+=== initially right only: n=1032, flipped=451 (43.7%) ===
+  Initial-margin baseline AUROC: 0.821 ± 0.011
+  layer  1: probe 0.611 ± 0.027   lens 0.505 ± 0.037   CLEAR C=0.0001  (2s)
+  layer  2: probe 0.626 ± 0.024   lens 0.517 ± 0.061   CLEAR C=0.001  (2s)
+  layer  3: probe 0.629 ± 0.023   lens 0.518 ± 0.042   CLEAR C=0.001  (2s)
+  layer  4: probe 0.625 ± 0.025   lens 0.517 ± 0.046   CLEAR C=0.001  (3s)
+  layer  5: probe 0.621 ± 0.030   lens 0.520 ± 0.054   CLEAR C=0.001  (3s)
+  layer  6: probe 0.632 ± 0.022   lens 0.471 ± 0.054   CLEAR C=0.001  (2s)
+  layer  7: probe 0.635 ± 0.022   lens 0.471 ± 0.009   CLEAR C=0.001  (2s)
+  layer  8: probe 0.661 ± 0.026   lens 0.484 ± 0.036   CLEAR C=0.001  (2s)
+  layer  9: probe 0.646 ± 0.022   lens 0.486 ± 0.053   CLEAR C=0.001  (2s)
+  layer 10: probe 0.665 ± 0.026   lens 0.470 ± 0.026   CLEAR C=0.001  (2s)
+  layer 11: probe 0.667 ± 0.024   lens 0.470 ± 0.022   CLEAR C=0.001  (2s)
+  layer 12: probe 0.676 ± 0.028   lens 0.492 ± 0.040   CLEAR C=0.001  (2s)
+  layer 13: probe 0.689 ± 0.019   lens 0.468 ± 0.049   CLEAR C=0.001  (2s)
+  layer 14: probe 0.730 ± 0.028   lens 0.529 ± 0.015   CLEAR C=0.001  (2s)
+  layer 15: probe 0.775 ± 0.020   lens 0.525 ± 0.015   CLEAR C=0.001  (2s)
+  layer 16: probe 0.782 ± 0.013   lens 0.485 ± 0.028   CLEAR C=0.001  (2s)
+  layer 17: probe 0.824 ± 0.018   lens 0.476 ± 0.011   CLEAR C=0.001  (2s)
+  layer 18: probe 0.933 ± 0.013   lens 0.784 ± 0.041   CLEAR C=0.01  (2s)
+  layer 19: probe 0.949 ± 0.012   lens 0.817 ± 0.035   CLEAR C=0.01  (2s)
+  layer 20: probe 0.950 ± 0.016   lens 0.882 ± 0.022   CLEAR C=0.01  (2s)
+  layer 21: probe 0.961 ± 0.013   lens 0.830 ± 0.035   CLEAR C=0.01  (2s)
+  layer 22: probe 0.968 ± 0.010   lens 0.975 ± 0.008         C=0.01  (2s)
+  layer 23: probe 0.967 ± 0.010   lens 0.991 ± 0.003         C=0.01  (2s)
+  layer 24: probe 0.973 ± 0.008   lens 0.994 ± 0.003         C=0.1  (2s)
+  layer 25: probe 0.975 ± 0.006   lens 1.000 ± 0.000         C=0.1  (2s)
+  layer 26: probe 0.965 ± 0.008   lens 1.000 ± 0.000         C=0.1  (2s)
+
+Wrote CSV and plots to results/probe_post_assert/
+
+=== SUMMARY ===
+
+All questions (n=1300, flipped 681):
+  Earliest layer where the probe clearly beats the logit lens (non-overlapping fold std): layer 1.
+  Layers 8–17: probe clearly ahead at 10/10 layers; L8 0.69 vs 0.48; L9 0.68 vs 0.52; L10 0.71 vs 0.51; L11 0.70 vs 0.52; L12 0.71 vs 0.48; L13 0.72 vs 0.49; L14 0.76 vs 0.47; L15 0.81 vs 0.49; L16 0.81 vs 0.48; L17 0.85 vs 0.50
+  Logit lens is best at layer 26 (1.000); probe first exceeds the initial margin (0.857) at layer 18.
+  → The flip decision is linearly readable from layer 1, before the logit lens shows it around layers 17–19.
+    But at layer 1 the probe is still below the initial-margin baseline, so the early signal is weaker than what confidence alone predicts.
+
+Initially right only (n=1032, flipped 451):
+  Earliest layer where the probe clearly beats the logit lens (non-overlapping fold std): layer 1.
+  Layers 8–17: probe clearly ahead at 10/10 layers; L8 0.66 vs 0.48; L9 0.65 vs 0.49; L10 0.67 vs 0.47; L11 0.67 vs 0.47; L12 0.68 vs 0.49; L13 0.69 vs 0.47; L14 0.73 vs 0.53; L15 0.77 vs 0.53; L16 0.78 vs 0.48; L17 0.82 vs 0.48
+  Logit lens is best at layer 26 (1.000); probe first exceeds the initial margin (0.821) at layer 17.
+  → The flip decision is linearly readable from layer 1, before the logit lens shows it around layers 17–19.
+    But at layer 1 the probe is still below the initial-margin baseline, so the early signal is weaker than what confidence alone predicts.
