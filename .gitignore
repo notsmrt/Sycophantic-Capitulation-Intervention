@@ -2,9 +2,8 @@
 .venv/
 __pycache__/
 .DS_Store
-.claude/
 
-# Activations (4 × 311 MB, over GitHub's file limit). Regenerate with collect.py;
+# Activations (4 x 311 MB, over GitHub's file limit). Regenerate with collect.py;
 # to be hosted on Hugging Face. data/records.jsonl is small and tracked.
 data/*.npy
 
